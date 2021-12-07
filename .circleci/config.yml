@@ -193,7 +193,6 @@ jobs:
       - run:
           name: Run migrations
           command: |
-            cat .env
             cd backend
             sudo apt-get -y -qq update
             sudo apt-get -y -qq install python3
