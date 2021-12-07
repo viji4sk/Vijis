@@ -191,16 +191,18 @@ jobs:
       - restore_cache:
             keys: [backend-build]
       - run:
-          name: Run migrations
+          name: Link 
           command: |
-            cd backend
+            cd ./backend
             sudo apt-get -y -qq update
             sudo apt-get -y -qq install python3
             sudo apt-get -qq install awscli
             sudo npm cache clean -f
             npm install
+            npm run build
       - run:
-          name: Run migrations    
+          name: Link
+
           command: |
             cd backend
             touch .env
@@ -217,6 +219,10 @@ jobs:
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> .env
             ls -latr
             cat .env
+      - run:
+          name: Run migrations
+          command : | 
+            cd backend     
             npm run migrations > migrations_dump.txt
             cat migrationresult.txt
       - run:
@@ -226,7 +232,7 @@ jobs:
              then
                curl -H "Content-Type: text/plain" -H "token: 3db6c101-a4a9-41b4-9a5c-259717683a43" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}              
              fi
-     # Here's where you will add some code to rollback on failure  viji u have to add here  
+      - destroy-environment
       
               
 workflows:
