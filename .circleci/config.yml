@@ -8,10 +8,10 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-                cd backend
-                aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
-                aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-                aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
+            echo "Destroying environment: <<parameters.workflow_id>> "
+            aws cloudformation delete-stack --stack-name udapeople-backend-prod-<<parameters.workflow_id>>
+            aws s3 rm s3://udapeople-prod-<<parameters.workflow_id>> --recursive
+            aws cloudformation delete-stack --stack-name udapeople-frontend-prod-<<parameters.workflow_id>>
                
 
 jobs:
@@ -207,14 +207,13 @@ jobs:
              if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
              then
               curl -H "Content-Type: text/plain" -H "token: 3db6c101-a4a9-41b4-9a5c-259717683a43" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}              
-             fi
-             
+             fi      
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
       
               
 workflows:
-  default:
+ default:
     jobs:
       #- build-frontend
       #- build-backend
