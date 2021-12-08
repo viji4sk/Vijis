@@ -15,6 +15,19 @@ commands:
             aws cloudformation delete-stack --stack-name udapeople-backend-prod-<<parameters.workflow_id>>
             aws s3 rm s3://udapeople-prod-<<parameters.workflow_id>> --recursive
             aws cloudformation delete-stack --stack-name udapeople-frontend-prod-<<parameters.workflow_id>>
+            
+  undo_migrations:
+    description: Revert the last migration if successfully run in the current workflow.
+    steps:
+      - run:
+          name: Revert migrations
+          when: on_fail
+          command: |
+            cd ~/project/backend
+            if [[ -f "~/project/.circleci/outputs/db_migration_success" ]]; then
+              npm i
+              npm run migration:revert
+            fi         
                
 
 jobs:
@@ -146,15 +159,21 @@ jobs:
       - run:
           name: Add back-end ip to ansible inventory
           command: |
+                VIJI_IP=$(aws ec2 describe-instances \
                 aws ec2 describe-instances \
                   --query 'Reservations[*].Instances[*].PublicIpAddress' \
                   --filters "Name=tag:project,Values=udapeople" \
-                  --output text >> .circleci/ansible/inventory.txt
-                 cat .circleci/ansible/inventory.txt   
+                  --output text)
+                 echo "http://$VIJI_IP:3030" >> .circleci/outputs/link.txt 
+                 echo "[all]" >> .circleci/ansible/inventory.txt
+                 echo "$VIJI_IP" >> .circleci/ansible/inventory.txt
+                 
+                 cat .circleci/outputs/link.txt
              
       - persist_to_workspace:
           root: ~/
           paths:
+            - project/.circleci/outputs/link.txt
             - project/.circleci/ansible/inventory.txt
             
       - destroy-environment:
@@ -220,24 +239,24 @@ jobs:
 workflows:
  default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]    
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-              branches:
-                only:
-                  - master
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
+     #~- build-frontend
+     #- build-backend
+     #- test-frontend:
+     #     requires: [build-frontend]
+     #- test-backend:
+     #     requires: [build-backend]    
+     # - scan-backend:
+     #     requires: [build-backend]
+     # - scan-frontend:
+     #     requires: [build-frontend]
+     # - deploy-infrastructure:
+     #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+     #    filters:
+     #         branches:
+     #           only:
+     #             - master
+      - configure-infrastructure
+     #     requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]            
     
