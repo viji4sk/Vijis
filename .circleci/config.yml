@@ -163,12 +163,13 @@ jobs:
                   --query 'Reservations[*].Instances[*].PublicIpAddress' \
                   --filters "Name=tag:project,Values=udapeople" \
                   --output text)
-          no_output_timeout: 10m       
+                
                  echo "http://$VIJI_IP:3030" >> .circleci/outputs/link.txt 
                  echo "[all]" >> .circleci/ansible/inventory.txt
                  echo "$VIJI_IP" >> .circleci/ansible/inventory.txt
                  
                  cat .circleci/outputs/link.txt
+          no_output_timeout: 10m      
              
       - persist_to_workspace:
           root: ~/
