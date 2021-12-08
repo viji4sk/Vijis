@@ -9,9 +9,10 @@ commands:
           when: on_fail
           command: |
                 cd backend
+                aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
                 aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
                 aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
-                aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
+               
 
 jobs:
   build-frontend:
@@ -190,21 +191,13 @@ jobs:
       - checkout
       - restore_cache:
             keys: [backend-build]
-      - run:
-          name: Link 
-          command: |
-            cd backend
-            sudo apt-get -y -qq update
-            sudo apt-get -y -qq install python3
-            sudo apt-get -qq install awscli
-            sudo npm cache clean -f
-            
+      - attach_workspace:
+          at: ~/            
       - run:
           name: Run migrations
           command : | 
             cd  backend    
             npm install
-            npm build
             npm audit fix --force
             npm run migrations > migrations_dump.txt
             cat migrations_dump.txt
@@ -216,8 +209,8 @@ jobs:
               curl -H "Content-Type: text/plain" -H "token: 3db6c101-a4a9-41b4-9a5c-259717683a43" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}              
              fi
              
-      # - destroy-environment:
-      #          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       
               
 workflows:
