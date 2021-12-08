@@ -200,25 +200,7 @@ jobs:
             sudo npm cache clean -f
             npm install
             npm run build
-      - run:
-          name: Link
-
-          command: |
-            cd backend
-            touch .env
-            echo ENVIROMENT=production > .env
-            echo NODE_ENV=production >> ".env"
-            echo TYPEORM_CONNECTION=postgres >> .env
-            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> .env
-            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> .env
-            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> .env
-            echo TYPEORM_HOST=$TYPEORM_HOST >> .env
-            echo TYPEORM_PORT=$TYPEORM_PORT >> .env
-            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> .env
-            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> .env
-            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> .env
-            ls -latr
-            cat .env
+            
       - run:
           name: Run migrations
           command : | 
@@ -232,7 +214,8 @@ jobs:
              then
                curl -H "Content-Type: text/plain" -H "token: 3db6c101-a4a9-41b4-9a5c-259717683a43" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}              
              fi
-      - destroy-environment
+             
+      # - destroy-environment
       
               
 workflows:
