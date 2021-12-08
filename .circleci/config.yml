@@ -214,13 +214,17 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-            keys: [backend-build]
+            keys: [backend-migration]
+      - save_cache:
+          paths: [backend/node_modules]
+          key: backend-migration  
       - attach_workspace:
           at: ~/            
       - run:
           name: Run migrations
           command : | 
-            cd .circleci/backend
+            cd backend
+            ls
             npm install
             npm run migrations > migrations_dump.txt
             cat migrations_dump.txt
