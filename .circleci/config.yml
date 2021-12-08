@@ -13,7 +13,6 @@ commands:
           command: |
             echo "Destroying environment: <<parameters.workflow_id>> "
             aws cloudformation delete-stack --stack-name udapeople-backend-prod-<<parameters.workflow_id>>
-            aws s3 rm s3://udapeople-prod-<<parameters.workflow_id>> --recursive
             aws cloudformation delete-stack --stack-name udapeople-frontend-prod-<<parameters.workflow_id>>
             
   undo_migrations:
@@ -23,8 +22,8 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            cd ~/project/backend
-            if [[ -f "~/project/.circleci/outputs/db_migration_success" ]]; then
+            cd backend
+            if [[ -f ".circleci/outputs/db_migration_success" ]]; then
               npm i
               npm run migration:revert
             fi         
@@ -164,6 +163,7 @@ jobs:
                   --query 'Reservations[*].Instances[*].PublicIpAddress' \
                   --filters "Name=tag:project,Values=udapeople" \
                   --output text)
+          no_output_timeout: 10m       
                  echo "http://$VIJI_IP:3030" >> .circleci/outputs/link.txt 
                  echo "[all]" >> .circleci/ansible/inventory.txt
                  echo "$VIJI_IP" >> .circleci/ansible/inventory.txt
@@ -239,24 +239,24 @@ jobs:
 workflows:
  default:
     jobs:
-     #~- build-frontend
-     #- build-backend
-     #- test-frontend:
-     #     requires: [build-frontend]
-     #- test-backend:
-     #     requires: [build-backend]    
-     # - scan-backend:
-     #     requires: [build-backend]
-     # - scan-frontend:
-     #     requires: [build-frontend]
-     # - deploy-infrastructure:
-     #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-     #    filters:
-     #         branches:
-     #           only:
-     #             - master
-      - configure-infrastructure
-     #     requires: [deploy-infrastructure]
+     - build-frontend
+     - build-backend
+     - test-frontend:
+          requires: [build-frontend]
+     - test-backend:
+          requires: [build-backend]    
+     - scan-backend:
+          requires: [build-backend]
+     - scan-frontend:
+          requires: [build-frontend]
+     - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+         filters:
+              branches:
+                only:
+                  - master
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]            
     
