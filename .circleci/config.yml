@@ -248,21 +248,21 @@ jobs:
             # MUST be http not https
             name: Get backend url
             command: |
-              cd frontend
-              sudo -i
               export VIJIS_IP=$(aws ec2 describe-instances \
                   --query 'Reservations[*].Instances[*].PublicIpAddress' \
                   --filters "Name=tag:project,Values=udapeople" \
                   --output text)
-              export API_URL="http://${VIJIS_IP}:3030"
-              echo "API_URL = ${API_URL}"
-              echo API_URL="http://${VIJIS_IP}:3030" > apiu.txt
+              export API_URL=$(echo "http://$VIJIS_IP:3030")
+              cd frontend
+              echo "${API_URL}" > apiu.txt
+        
       - run:
             name: Deploy frontend objects
             command: |
               cd frontend
-              echo API_URL
-              npm install
+              export API_URL=$(cat apiu.txt)
+              cat apiu.txt
+              npm i
               npm run build
               tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
               aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
