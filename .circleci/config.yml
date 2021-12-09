@@ -252,8 +252,8 @@ jobs:
                 --query 'Reservations[*].Instances[*].PublicIpAddress' \
                 --filters "Name=tag:project,Values=udapeople" \
                 --output text)
-              echo VIJIS_IP
-              export API_URL="http://VIJIS_IP:3030"
+              echo $VIJIS_IP
+              export API_URL="http://$VIJIS_IP:3030"
               echo API_URL=${API_URL}
               cd frontend
               npm install
