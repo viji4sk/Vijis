@@ -110,6 +110,7 @@ jobs:
           command: |
             cd frontend
             npm install
+            npm start
             npm audit 
       - save_cache:
           paths: [frontend/node_modules]
