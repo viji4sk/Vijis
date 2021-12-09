@@ -248,7 +248,7 @@ jobs:
             # MUST be http not https
             name: Get backend url
             command: |
-              export VIJIS_IP=$(aws ec2 describe-instances \
+              VIJIS_IP=$(aws ec2 describe-instances \
                   --query 'Reservations[*].Instances[*].PublicIpAddress' \
                   --filters "Name=tag:project,Values=udapeople" \
                   --output text)
