@@ -262,9 +262,8 @@ jobs:
       - run:
             name: Deploy frontend objects
             command: |
-             
-              aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-             
+              cd frontend 
+              aws s3 cp ./frontend/dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
               s3Buck=$(echo "udapeople-${CIRCLE_WORKFLOW_ID:0:7}")
               #aws s3 sync dist s3://$s3Bucket/
               URL02=("http://$s3Buck.s3-website-eu-east-1.amazonaws.com")
