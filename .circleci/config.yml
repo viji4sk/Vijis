@@ -240,8 +240,10 @@ jobs:
       - run:
             name: Install dependencies
             command: |
-              sudo apt-get -y -qq update
-              sudo apt-get -qq install awscli
+              apk add --no-cache curl
+              apk add --no-cache --upgrade bash
+              apk add --no-cache --update npm
+              pip3 install awscli
       - attach_workspace:
             at: .    
       - run:
@@ -249,6 +251,7 @@ jobs:
             name: Get backend url
             command: |
               cd frontend
+              sudo -i
               export VIJIS_IP=$(aws ec2 describe-instances \
                   --query 'Reservations[*].Instances[*].PublicIpAddress' \
                   --filters "Name=tag:project,Values=udapeople" \
