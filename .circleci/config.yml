@@ -248,12 +248,12 @@ jobs:
             # MUST be http not https
             name: Get backend url
             command: |
-              VIJIS_IP=$(aws ec2 describe-instances \
+                    export VIJIS_IP=$(aws ec2 describe-instances \
                   --query 'Reservations[*].Instances[*].PublicIpAddress' \
                   --filters "Name=tag:project,Values=udapeople" \
                   --output text)
-              echo ${VIJIS_IP}   
-              export API_URL="http://${VIJIS_IP}:3030"
+              echo "$VIJI_IP"   
+              export API_URL="http://$VIJIS_IP:3030"
               echo API_URL=${API_URL}
               cd frontend
               npm install
