@@ -255,13 +255,12 @@ jobs:
                   --output text)
               export API_URL="http://${VIJIS_IP}:3030"
               echo "API_URL = ${API_URL}"
-              echo API_URL="http://${VIJIS_IP}:3030" > frontend/.env
-              cat frontend/.env   
+              echo API_URL="http://${VIJIS_IP}:3030" > apiu.txt
       - run:
             name: Deploy frontend objects
             command: |
               cd frontend
-              export API_URL=$(cat frontend/.env)
+              export API_URL=$(cat apiu.txt)
               cat API_URL
               npm install
               npm run build
