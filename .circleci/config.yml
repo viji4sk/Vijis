@@ -252,18 +252,16 @@ jobs:
                   --query 'Reservations[*].Instances[*].PublicIpAddress' \
                   --filters "Name=tag:project,Values=udapeople" \
                   --output text)
-              export API_URL=$(echo "http://$VIJIS_IP:3030")
+              echo ${VIJIS_IP}   
+              export API_URL="http://${VIJIS_IP}:3030"
+              echo API_URL=${API_URL}
               cd frontend
-              echo "${API_URL}" > apiu.txt
+              npm install
+              npm run build     
         
       - run:
             name: Deploy frontend objects
             command: |
-              cd frontend
-              export API_URL=$(cat apiu.txt)
-              cat apiu.txt
-              npm i
-              npm run build
               tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
               aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
              
