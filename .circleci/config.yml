@@ -213,8 +213,8 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-#       - restore_cache:
-#             keys: [backend-migration]
+      - restore_cache:
+            keys: [backend-build]
 #       - save_cache:
 #           paths: [backend/node_modules]
 #           key: backend-migration  
@@ -224,7 +224,7 @@ jobs:
           name: Run migrations
           command : | 
             cd backend
-            ls
+            npm install
             npm run migrations > migrations_dump.txt
             cat migrations_dump.txt
       - run:
