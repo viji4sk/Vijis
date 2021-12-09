@@ -209,24 +209,22 @@ jobs:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"    
       
   run-migrations:
-    docker:
-      - image: circleci/node:13.8.0
+#     docker:
+#       - image: circleci/node:13.8.0
     steps:
-      - checkout
-      - restore_cache:
-            keys: [backend-migration]
-      - save_cache:
-          paths: [backend/node_modules]
-          key: backend-migration  
-      - attach_workspace:
-          at: ~/            
+#       - checkout
+#       - restore_cache:
+#             keys: [backend-migration]
+#       - save_cache:
+#           paths: [backend/node_modules]
+#           key: backend-migration  
+#       - attach_workspace:
+#           at: ~/            
       - run:
           name: Run migrations
           command : | 
             cd backend
             ls
-            npm install
-            npm audit fix --audit-level=critical --force
             npm run migrations > migrations_dump.txt
             cat migrations_dump.txt
       - run:
