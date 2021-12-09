@@ -127,6 +127,7 @@ jobs:
           command: |
             cd backend
             npm install 
+            npm config set prefix /usr/local
             ncu -u
             npm audit 
       - save_cache:
