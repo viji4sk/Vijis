@@ -249,7 +249,7 @@ jobs:
             name: Get backend url
             command: |
               cd frontend
-              VIJIS_IP=$(aws ec2 describe-instances \
+              export VIJIS_IP=$(aws ec2 describe-instances \
                   --query 'Reservations[*].Instances[*].PublicIpAddress' \
                   --filters "Name=tag:project,Values=udapeople" \
                   --output text)
