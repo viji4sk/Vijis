@@ -127,7 +127,8 @@ jobs:
           name: Run backend scan
           command: |
             cd backend
-            npm install
+            npm install 
+            npm start
             npm audit 
       - save_cache:
           paths: [backend/node_modules]
