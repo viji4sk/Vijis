@@ -163,9 +163,9 @@ jobs:
                   --filters "Name=tag:project,Values=udapeople" \
                   --output text)
                 
-                 echo "http://$VIJI_IP:3030" >> .circleci/outputs/link.txt 
-                 echo "[all]" >> .circleci/ansible/inventory.txt
-                 echo "$VIJI_IP" >> .circleci/ansible/inventory.txt
+                 echo "http://$VIJI_IP:3030" > .circleci/outputs/link.txt 
+                 echo "[all]" > .circleci/ansible/inventory.txt
+                 echo "$VIJI_IP" > .circleci/ansible/inventory.txt
                  
                  cat .circleci/outputs/link.txt
          # no_output_timeout: 5m      
@@ -214,12 +214,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-            keys: [backend-build]
-#       - save_cache:
-#           paths: [backend/node_modules]
-#           key: backend-migration  
-#       - attach_workspace:
-#           at: ~/            
+            keys: [backend-build]           
       - run:
           name: Run migrations
           command : | 
