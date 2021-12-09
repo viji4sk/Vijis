@@ -168,7 +168,7 @@ jobs:
                  echo "$VIJI_IP" >> .circleci/ansible/inventory.txt
                  
                  cat .circleci/outputs/link.txt
-          no_output_timeout: 10m      
+         # no_output_timeout: 5m      
              
       - persist_to_workspace:
           root: ~/
@@ -225,6 +225,7 @@ jobs:
           command : | 
             cd backend
             npm install
+            npm audit fix --force
             npm run migrations > migrations_dump.txt
             cat migrations_dump.txt
       - run:
