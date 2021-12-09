@@ -110,7 +110,7 @@ jobs:
           command: |
             cd frontend
             npm install
-            npm audit 
+            npm audit fix --force
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-scan
@@ -126,9 +126,8 @@ jobs:
           name: Run backend scan
           command: |
             cd backend
-            npm install 
-            npm update
-            npm audit 
+            npm install
+            npm audit fix --force
       - save_cache:
           paths: [backend/node_modules]
           key: backend-scan  
@@ -236,8 +235,8 @@ jobs:
              then
               curl -H "Content-Type: text/plain" -H "token: 3db6c101-a4a9-41b4-9a5c-259717683a43" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}              
              fi      
-#       - destroy-environment:
-#           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - destroy-environment:
+           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
                     
 workflows:
  default:
@@ -252,14 +251,14 @@ workflows:
           requires: [build-backend]
     - scan-frontend:
           requires: [build-frontend]
-    #- deploy-infrastructure:
-    #      requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-    #      filters:
-    #          branches:
-    #            only:
-    #              - master
-    #- configure-infrastructure:
-    #      requires: [deploy-infrastructure]
-    #- run-migrations
-    #      requires: [configure-infrastructure]            
+    - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+              branches:
+                only:
+                  - master
+    - configure-infrastructure:
+          requires: [deploy-infrastructure]
+    - run-migrations:
+          requires: [configure-infrastructure]            
     
