@@ -12,9 +12,15 @@ commands:
           when: on_fail
           command: |
             cd backend
-            echo "Destroying environment: <<parameters.workflow_id>> "
-             aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.workflow_id>>
-             aws cloudformation delete-stack --stack-name udapeople-frontend-<<parameters.workflow_id>>
+             echo "Destroying environment: <<parameters.workflow_id>> "
+             #aws s3 rm s3://udapeople-s3bucket-${CIRCLE_WORKFLOW_ID}/ --recursive
+             aws s3 rm s3://udapeople-c41935f/ --recursive
+             
+             #aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.workflow_id>>
+             aws cloudformation delete-stack --stack-name udapeople-backend-c41935f
+             
+             #aws cloudformation delete-stack --stack-name udapeople-frontend-<<parameters.workflow_id>>
+             aws cloudformation delete-stack --stack-name udapeople-frontend-c41935f
             
   undo_migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -334,7 +340,9 @@ jobs:
             #cat $myenv
             #tar -C backend -czvf artifact.tar.gz .    
        
-       #- destroy-environment    
+      - undo_migrations
+      - destroy-environment    
+       
       
            
                     
