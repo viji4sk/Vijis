@@ -297,7 +297,7 @@ jobs:
           at: ~/     
       - run:
           name: Install dependencies
-           command: |
+          command: |
             apk add --update ansible
           
       - run:
