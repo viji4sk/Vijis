@@ -301,9 +301,9 @@ jobs:
                   --query 'Reservations[*].Instances[*].PublicIpAddress' \
                   --filters "Name=tag:project,Values=udapeople" \
                   --output text)
-               
+                 echo "$VIJI_IP"
                  echo "[all]" > .circleci/ansible/inventory.txt
-                 echo "$VIJI_IP" > .circleci/ansible/inventory.txt
+                 echo $VIJI_IP >> .circleci/ansible/inventory.txt
                  cat .circleci/ansible/inventory.txt
    
       - attach_workspace:
