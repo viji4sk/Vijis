@@ -293,19 +293,34 @@ jobs:
             apk add --update ansible
             apk add --update tar gzip nodejs npm
             apk add --update openssh-client
+            
       - run:
-          name: Compress Backend
+          name: Add env variables
           command: |
-            cd backend
-            npm i
-            npm run build
-            cd ..
+            [[ ! -d backend ]] && mkdir backend
+            myenv="backend/.env"
+            echo ENVIROMENT=production > $myenv
+            echo NODE_ENV=production >> $myenv
+            echo TYPEORM_CONNECTION=postgres >> $myenv
+            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> $myenv
+            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> $myenv
+            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> $myenv
+            echo TYPEORM_HOST=$TYPEORM_HOST >> $myenv
+            echo TYPEORM_PORT=$TYPEORM_PORT >> $myenv
+            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> $myenv
+            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> $myenv
+            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> $myenv
+            cat $myenv
             tar -C backend -czvf artifact.tar.gz .
-            cd .circleci/ansible
-            echo "Contents  of the inventory.txt file is -------"
-            cat .circleci/ansible/inventory.txt 
+            ls -la         
+      - run:
+          name: anisible Backend
+          command: |
+            ANSIBLE_HOST_KEY_CHECKING=False
+            pwd
+            cat .circleci/ansible/inventory.txt
             ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
-     
+       
      #- destroy-environment    
       
            
