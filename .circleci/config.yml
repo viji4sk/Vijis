@@ -283,42 +283,51 @@ jobs:
   
     steps:
       - checkout
+      - run:
+          name: Install depend
+          command: |
+            apk add tar gzip
+            apk update pip3
+            pip3 install awscli
+            apk add --update curl
+            apk add --update nodejs npm
       - add_ssh_keys:
                   fingerprints: ["57:c5:0b:72:5e:40:a5:e2:40:5b:67:b6:d7:80:f1:b3"]
       - attach_workspace:
-          at: ~/
+          at: ~/     
       - run:
           name: Install dependencies
-          command: |
+           command: |
             apk add --update ansible
-            apk add --update tar gzip nodejs npm
-            apk add --update openssh-client
+          
       - run:
-          name: Compress Backend
+          name: deploy backend
           command: |
-            [[ ! -d backend ]] && mkdir backend
-            myenv="backend/.env"
-            echo ENVIROMENT=production > $myenv
-            echo NODE_ENV=production >> $myenv
-            echo TYPEORM_CONNECTION=postgres >> $myenv
-            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> $myenv
-            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> $myenv
-            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> $myenv
-            echo TYPEORM_HOST=$TYPEORM_HOST >> $myenv
-            echo TYPEORM_PORT=$TYPEORM_PORT >> $myenv
-            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> $myenv
-            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> $myenv
-            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> $myenv
-            cat $myenv
-            tar -C backend -czvf artifact.tar.gz .
-      - run:
-          name: deploy backend      
-          command: |  
             cd backend
+            npm i
+            npm run build
+            cd..
+            tar -C backend -czvf artifact.tar.gz .
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
-            ansible-playbook -i inventory.txt deploy-backend.yml        
+            ansible-playbook -i inventory.txt deploy-backend.yml 
+            
+            #[[ ! -d backend ]] && mkdir backend
+            #myenv="backend/.env"
+            #echo ENVIROMENT=production > $myenv
+            #echo NODE_ENV=production >> $myenv
+            #echo TYPEORM_CONNECTION=postgres >> $myenv
+            #echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> $myenv
+            #echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> $myenv
+            #echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> $myenv
+            #echo TYPEORM_HOST=$TYPEORM_HOST >> $myenv
+            #echo TYPEORM_PORT=$TYPEORM_PORT >> $myenv
+            #echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> $myenv
+            #echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> $myenv
+            #echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> $myenv
+            #cat $myenv
+            #tar -C backend -czvf artifact.tar.gz .    
        
        #- destroy-environment    
       
