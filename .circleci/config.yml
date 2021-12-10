@@ -291,28 +291,35 @@ jobs:
             pip3 install awscli
             apk add --update curl
             apk add --update nodejs npm
+            apk add --update ansible
       - add_ssh_keys:
                   fingerprints: ["57:c5:0b:72:5e:40:a5:e2:40:5b:67:b6:d7:80:f1:b3"]
+      - run:
+          name: Get ip
+          command: |
+            VIJI_IP=$(aws ec2 describe-instances \
+                  --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                  --filters "Name=tag:project,Values=udapeople" \
+                  --output text)
+               
+                 echo "[all]" > .circleci/ansible/inventory.txt
+                 echo "$VIJI_IP" > .circleci/ansible/inventory.txt
+                 cat ./inventory
+   
       - attach_workspace:
           at: ~/     
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible
           
       - run:
           name: deploy backend
           command: |
-            cd backend
-            npm i
-            npm run build
-            cd..
+            printenv >> ./backend/.env
             tar -C backend -czvf artifact.tar.gz .
-            cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
-            ansible-playbook -i inventory.txt deploy-backend.yml 
-            
+            cd .circleci/ansible/
+            ansible-playbook -i ./inventory deploy.yml
+          
+                       
             #[[ ! -d backend ]] && mkdir backend
             #myenv="backend/.env"
             #echo ENVIROMENT=production > $myenv
