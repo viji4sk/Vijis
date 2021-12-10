@@ -18,7 +18,6 @@
     TYPEORM_DATABASE: "{{ lookup('env','TYPEORM_DATABASE') }}"
     TYPEORM_MIGRATIONS: "{{ lookup('env','TYPEORM_MIGRATION') }}"
     TYPEORM_MIGRATIONS_DIR: "{{ lookup('env','MIGRATIONS_DIR') }}"
-
     
   roles:
     - deploy
