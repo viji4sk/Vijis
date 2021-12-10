@@ -310,10 +310,6 @@ jobs:
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> $myenv
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> $myenv
             cat $myenv
-            cd backend
-            npm i
-            npm run build 
-            cd..
             tar -C backend -czvf artifact.tar.gz .
       - run:
           name: deploy backend      
