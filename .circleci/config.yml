@@ -294,8 +294,12 @@ jobs:
             apk add --update ansible
       - add_ssh_keys:
                   fingerprints: ["57:c5:0b:72:5e:40:a5:e2:40:5b:67:b6:d7:80:f1:b3"]
+      
+      - attach_workspace:
+          at: ~/              
+      
       - run:
-          name: Get ip
+          name: Get ip  and deploy back end 
           command: |
             VIJI_IP=$(aws ec2 describe-instances \
                   --query 'Reservations[*].Instances[*].PublicIpAddress' \
@@ -305,17 +309,11 @@ jobs:
                  echo "[all]" > .circleci/ansible/inventory.txt
                  echo $VIJI_IP >> .circleci/ansible/inventory.txt
                  cat .circleci/ansible/inventory.txt
-   
-      - attach_workspace:
-          at: ~/     
-          
-      - run:
-          name: deploy backend
-          command: |
+                 
             printenv >> ./backend/.env
             tar -C backend -czvf artifact.tar.gz .
             echo "Contents  of the inventory.txt file is -------"
-            cat inventory.txt
+            cat .circleci/ansible/inventory.txt
             cd .circleci/ansible/
             ansible-playbook -i ./inventory deploy.yml
           
