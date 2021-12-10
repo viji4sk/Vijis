@@ -277,6 +277,38 @@ jobs:
               - frontend/dist
       #- destroy-environment
       
+  deploy-backend:
+    docker:
+      - image: python:3.7-alpine3.11
+  
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - d7:fd:94:12:70:77:34:28:cf:cc:90:77:11:49:c9:2a add mine 
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible
+            apk add --update tar gzip nodejs npm
+            apk add --update openssh-client
+      - run:
+          name: Compress Backend
+          command: |
+            cd backend
+            npm i
+            npm run build
+            cd ..
+            tar -C backend -czvf artifact.tar.gz .
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is -------"
+            cat .circleci/ansible/inventory.txt 
+            ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
+     
+     #- destroy-environment    
+      
            
                     
 workflows:
@@ -302,7 +334,7 @@ workflows:
     #      requires: [deploy-infrastructure]
     #- run-migrations:
     #      requires: [configure-infrastructure]    
-    - deploy-frontend
+    #- deploy-frontend:
     #     requires: [run-migrations]
-    #- deploy-backend:
+    - deploy-backend
     #      requires: [run-migrations]
