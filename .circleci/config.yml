@@ -297,27 +297,26 @@ jobs:
       - run:
           name: Add env variables
           command: |
-            [[ ! -d backend ]] && mkdir backend
-            myenv="backend/.env"
-            echo ENVIROMENT=production > $myenv
-            echo NODE_ENV=production >> $myenv
-            echo TYPEORM_CONNECTION=postgres >> $myenv
-            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> $myenv
-            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> $myenv
-            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> $myenv
-            echo TYPEORM_HOST=$TYPEORM_HOST >> $myenv
-            echo TYPEORM_PORT=$TYPEORM_PORT >> $myenv
-            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> $myenv
-            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> $myenv
-            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> $myenv
-            cat $myenv
+            cd backend
+            mkdir backend
+            EM ="backend/.env"
+            echo ENVIROMENT=production > $EM
+            echo NODE_ENV=production >> $EM
+            echo TYPEORM_CONNECTION=postgres >> $EM
+            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> $EM
+            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> $EM
+            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> $EM
+            echo TYPEORM_HOST=$TYPEORM_HOST >> $EM
+            echo TYPEORM_PORT=$TYPEORM_PORT >> $EM
+            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> $EM
+            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> $EM
+            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> $EM
+            cat $EM
             tar -C backend -czvf artifact.tar.gz .
             ls -la         
       - run:
           name: anisible Backend
           command: |
-            ANSIBLE_HOST_KEY_CHECKING=False
-            pwd
             cat .circleci/ansible/inventory.txt
             ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
        
